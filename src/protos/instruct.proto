@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package instruct;
+
+// The instruction service definition.
+service Instruction {
+  // instruct LLM
+  rpc generate (InstructionRequest) returns (stream InstructionReply) {}
+}
+
+// dictionnary KV
+
+// The instruction containing the context, role and instruciton
+message Message {
+  string role = 1;
+  string content = 2;
+  map<string, string> keys = 3;
+}
+
+// requelst for instruction (several instruction messages)
+message InstructionRequest {
+    repeated Message instruction = 1;
+}
+
+// The response message containing the reply
+message InstructionReply {
+  Message generation = 1;
+}

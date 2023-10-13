@@ -1,0 +1,102 @@
+{
+  "name": "code-assistant",
+  "displayName": "Code Assistant",
+  "description": "Coding assistant providing chat with your code though LLM.",
+  "version": "0.0.1",
+  "repository": "https://github.com/DScudeler/codeassistant",
+  "engines": {
+    "vscode": "^1.83.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "codeAssistant.chatView",
+          "name": "Code Assistant"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "codeAssistant.clearChat",
+        "title": "Clear chat",
+        "category": "Code Assistant",
+        "icon": "$(clear-all)"
+      }
+    ],
+    "menus": {
+			"view/title": [
+				{
+					"command": "codeAssistant.clearChat",
+					"group": "navigation",
+					"when": "view == codeAssistant.chatView"
+				}
+			]
+		},
+    "configuration": {
+        "id": "codeAssistant",
+        "title": "Code Assistant",
+        "properties": {
+          "codeAssistant.server.address": {
+            "default": "localhost:50051",
+            "description": "LLM gRPC server address, <host>:<port>",
+            "type": "string",
+            "scope": "resource"
+          },
+          "codeAssistant.prompt.system": {
+            "default": "As an expert in software engineering, your task is to provide concise and relevant answers.",
+            "description": "System for first prompt",
+            "type": "string",
+            "scope": "resource"
+          },
+          "codeAssistant.prompt.user": {
+            "default": "The next answers are considered using the following code, delimited by <<<CTX>>> tag. The user can ask any question regarding that code, and you shall answer any question about it:\n <<<CTX>>>{sourceCode}<<<CTX>>>",
+            "description": "User prompt to introduce source code, pasted server side with {sourceCode}.",
+            "type": "string",
+            "scope": "resource"
+          },
+          "codeAssistant.prompt.assistant": {
+            "default": "Very well, I shall answer every question in the most accurate and concise way",
+            "description": "Simulated prompt answer for first user prompt. Plays as introduction to the chat with LLM.",
+            "type": "string",
+            "scope": "resource"
+          }
+        }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "node ./esbuild.js",
+    "watch": "node ./esbuild.js --watch",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "NODE_ENV=production node ./esbuild.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.2",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.83.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "@vscode/test-electron": "^2.3.4",
+    "esbuild": "^0.16.17",
+    "esbuild-plugin-copy": "^2.1.1",
+    "eslint": "^8.50.0",
+    "glob": "^10.3.3",
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.9.5",
+    "@grpc/proto-loader": "^0.7.10",
+    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "markdown-it": "^13.0.2"
+  }
+}

@@ -1,0 +1,30 @@
+div.conversation-list {
+	display: flex;
+	flex-direction: column;
+}
+
+div.user-text {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 5px;
+	border-radius: 10px;
+	position: relative;
+	width: 90%;
+	background-color: rgb(35, 35, 35);
+}
+
+div.assistant-text {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 5px;
+	border-radius: 10px;
+	position: relative;
+	left: 10%;
+	width: 90%;
+	background-color: rgb(65, 65, 65);;
+}
+
+.prompt-area {
+	margin-top: 20px;
+	width: 100%;
+}

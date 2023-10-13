@@ -1,12 +1,39 @@
-# Code Assistant
-A small project, educational trying to get interaction with AI within VS Code with a little more power than just auto complete.
-- [x] use of docker for embedings in weaviate
-- [ ] embed llama code into a container (TOOD)
-- [x] test with source with llama code etc... (minor tetsing done)
-- [ ] fine tuning of llm to create vs code commands (see if worth might wait for langchain integration)
-- [ ] plugin to interact with VS Code (in progress)
-- [ ] making an example project
+# Code Assistant 
 
-## UI with VS Code
-- Find a way to implement a chat with code assistant within vs code
-- build a full application with langchain, custom tools etc...
+A small personnal project to play with AI and VS Code.
+
+Code assistant provides a bridge between coding LLM and your development environment.
+
+> disclaimer : this project is just a try. It does not meet any QA expectations.
+> I highly recommend that you use other LLM frameworks or extensions for production.
+
+## Features
+
+Chat with your source code through LLM.
+
+## Requirements
+
+A gRPC server following the instruction protocol has to be up.
+
+## Extension Settings
+
+This extension contributes the following settings:
+
+* `codeAssistant.server.address`: LLM server address.
+* `codeAssistant.prompt.system`: System prompt used to open chat.
+* `codeAssistant.prompt.user`: User prompt used to open chat.
+* `codeAssistant.prompt.assistant`: Simulated answer from assistant to open chat.
+
+## Known Issues
+
+
+
+## Release Notes
+
+
+
+### 0.0.1
+
+Initial release
+
+---
