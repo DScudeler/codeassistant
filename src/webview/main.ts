@@ -5,14 +5,6 @@ provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeTextArea());
 const vscode = acquireVsCodeApi();
 const md = require('markdown-it')();
 
-// chat responses and prompts
-const button = document.querySelector('#chat-button');
-if (button) {
-    button.addEventListener('click', () => {
-        sendChat();
-    });
-}
-
 // Handle messages sent from the extension to the webview
 window.addEventListener('message', event => {
     const message = event.data; // The json data that the extension sent        
@@ -31,18 +23,6 @@ window.addEventListener('message', event => {
             }
     }
 });
-
-// gets the prompt and sends it to the extension side
-function sendChat() {
-    const promptArea = document.querySelector('.prompt-area') as HTMLTextAreaElement;
-    if (promptArea) {
-        const text = promptArea.value;
-        vscode.postMessage({ type: 'prompt', value: text });
-
-        // reset prompt
-        promptArea.value = "";
-    }
-}
 
 /** updates chat view (from 0?)
  * type is either user or assistant

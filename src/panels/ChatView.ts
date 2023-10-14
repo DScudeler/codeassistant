@@ -75,6 +75,17 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 		this._view?.webview.postMessage({ type: 'chatHistory', history: this._conversation });
 	}
 
+	public openChat() {
+		// retrieves prompt and sends it for LLM
+		const userInput = vscode.window.showInputBox();
+
+		userInput.then((prompt?) => {
+			if (prompt) {
+				this._sendToChat(prompt);
+			}
+		});
+	}
+
 	private _sendToChat(prompt: string) {
 		// retrieve selection
 		const selected = vscode.window.activeTextEditor?.selection;
@@ -161,10 +172,6 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 			<body>
 				<div class="conversation-list">
 				</div>
-
-				<vscode-text-area id="prompt" class="prompt-area"></vscode-text-area>
-
-				<vscode-button id="chat-button">Send</vscode-button>
 
 				<script type="module" nonce="${nonce}" src="${scriptUri}"></script>
 			</body>

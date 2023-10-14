@@ -22,6 +22,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand("codeAssistant.clearChat", () => {
             provider.clearChat();
+        }),
+        vscode.commands.registerCommand("codeAssistant.openChat", () => {
+            provider.openChat();
         })
     );
 }

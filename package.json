@@ -28,6 +28,11 @@
         "title": "Clear chat",
         "category": "Code Assistant",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "codeAssistant.openChat",
+        "title": "Open chat",
+        "category": "Code Assistant"
       }
     ],
     "menus": {
