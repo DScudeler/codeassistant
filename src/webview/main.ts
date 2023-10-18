@@ -39,10 +39,10 @@ function updateChatHistory(chatHistory: Array<{ role: string, content: string }>
             if (text.role === 'user') {
                 content.className = "user-text";
             } else {
-                content.className = "assistant-text";
-                content.innerHTML = md.render(content.textContent);
+                content.className = "assistant-text";                
             }
-
+            content.innerHTML = md.render(content.textContent);
+            
             conversationList.appendChild(content);
         }
     }
