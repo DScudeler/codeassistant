@@ -54,6 +54,12 @@
             "type": "string",
             "scope": "resource"
           },
+          "codeAssistant.prompt.selection": {
+            "default": "\nPlease answer knowing that the code selected is:\n{selection}",
+            "description": "Selection template for user prompt",
+            "type": "string",
+            "scope": "resource"
+          },
           "codeAssistant.prompt.system": {
             "default": "As an expert in software engineering, your task is to provide concise and relevant answers.",
             "description": "System for first prompt",

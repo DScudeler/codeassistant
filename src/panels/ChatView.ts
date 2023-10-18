@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
+import { StringFormatter} from "../utilities/StringFormatter";
 
 var grpc = require('@grpc/grpc-js');
 var protoLoader = require('@grpc/proto-loader');
@@ -67,6 +68,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 		});
 	}
 
+
 	public clearChat() {
 		// reset conversation
 		this._conversation = [];
@@ -74,6 +76,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 		// and send refresh order
 		this._view?.webview.postMessage({ type: 'chatHistory', history: this._conversation });
 	}
+
 
 	public openChat() {
 		// retrieves prompt and sends it for LLM
@@ -86,10 +89,21 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 		});
 	}
 
+
 	private _sendToChat(prompt: string) {
 		// retrieve selection
 		const selected = vscode.window.activeTextEditor?.selection;
 		const fullCode = vscode.window.activeTextEditor?.document;
+
+		const configuration = vscode.workspace.getConfiguration();
+		const systemPrompt = configuration.get<string>('codeAssistant.prompt.system');
+		const userPrompt = configuration.get<string>('codeAssistant.prompt.user');
+		const assistantPrompt = configuration.get<string>('codeAssistant.prompt.user');
+		const selectionTemplate = configuration.get<string>('codeAssistant.prompt.selection');
+
+		if (selected && !selected.isEmpty) {
+			prompt += selectionTemplate;
+		}
 
 		this._conversation.push({
 			role: "user",
@@ -98,12 +112,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 				selection: fullCode?.getText(selected)
 			}
 		});
-
-		const configuration = vscode.workspace.getConfiguration();
-		const systemPrompt = configuration.get<string>('codeAssistant.prompt.system');
-		const userPrompt = configuration.get<string>('codeAssistant.prompt.user');
-		const assistantPrompt = configuration.get<string>('codeAssistant.prompt.user');
-
+		
 		const firstPromps = [{
 			role: 'system',
 			content: systemPrompt,
@@ -139,11 +148,21 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
 		call.on('data', dataCallBack);
 		call.on('end', registerResponseCallBack);
-
+		
 		// preparing the history
 		this._conversation.push({ role: 'assistant', content: "" });
-		this._view?.webview.postMessage({ type: 'chatHistory', history: this._conversation });
+		
+		// converting selections in the display
+		const developpedConversiontion = this._conversation.map((row: any) => {
+			let developpedContent = row.content;
+			if (row.keys && row.keys.selection) {
+				developpedContent = new StringFormatter(row.content, {selection: `\`\`\`${row.keys.selection}\`\`\``}).format();
+			}
+			return {role: row.role, content: developpedContent};
+		});
+		this._view?.webview.postMessage({ type: 'chatHistory', history: developpedConversiontion });
 	}
+
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
 		// Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
