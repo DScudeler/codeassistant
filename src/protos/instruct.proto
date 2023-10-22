@@ -5,7 +5,8 @@ package instruct;
 // The instruction service definition.
 service Instruction {
   // instruct LLM
-  rpc generate (InstructionRequest) returns (stream InstructionReply) {}
+  rpc generate (InstructionRequest) returns (stream InstructionReply);
+  rpc fill (FillRequest) returns (stream FillReply);
 }
 
 // dictionnary KV
@@ -25,4 +26,14 @@ message InstructionRequest {
 // The response message containing the reply
 message InstructionReply {
   Message generation = 1;
+}
+
+// To fill request
+message FillRequest {
+  string prefix = 1;
+  string suffix = 2;
+}
+
+message FillReply {
+  string whole_text = 1;
 }

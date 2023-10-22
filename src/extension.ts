@@ -25,7 +25,10 @@ export function activate(context: vscode.ExtensionContext) {
         }),
         vscode.commands.registerCommand("codeAssistant.openChat", () => {
             provider.openChat();
-        })
+        }),
+        vscode.commands.registerCommand("codeAssistant.infill", () => {
+            provider.infill();
+        }),
     );
 }
 

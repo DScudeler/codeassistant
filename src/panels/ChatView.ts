@@ -89,6 +89,47 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 		});
 	}
 
+	public infill() {
+		// gets the selection, splits around <FILL>, sends out request and updates selection range
+		const activeTextEditor = vscode.window.activeTextEditor;
+		if (!activeTextEditor) {
+			return;
+		}
+		let selected = activeTextEditor.selection;
+		if (selected.isEmpty) {
+			return;
+		}
+
+		const selectedText = activeTextEditor.document.getText(selected);
+		const splitText = selectedText?.split("<FILL>");
+
+		let call = this._client.fill({ prefix: splitText[0], suffix: splitText[0]});
+		let dataCallBack = (response: any) => {
+			this._lastResponse = response.whole_text;
+			activeTextEditor.edit(editBuilder => {
+				// update current selection
+				selected = activeTextEditor.selection;
+
+				editBuilder.replace(selected, this._lastResponse);
+			});
+		};
+
+		let validateCallBack = () => {
+			activeTextEditor.edit(editBuilder => {
+				// update current selection
+				selected = activeTextEditor.selection;
+
+				editBuilder.replace(selected, this._lastResponse);
+
+				this._lastResponse = "";
+			});
+
+			call.end();
+		};
+
+		call.on('data', dataCallBack);
+		call.on('end', validateCallBack);
+	}
 
 	private _sendToChat(prompt: string) {
 		// retrieve selection
@@ -144,6 +185,8 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 			this._conversation.pop();
 			this._conversation.push({ role: 'assistant', content: this._lastResponse });
 			call.end();
+
+			this._lastResponse = "";
 		};
 
 		call.on('data', dataCallBack);

@@ -2,7 +2,7 @@
   "name": "code-assistant",
   "displayName": "Code Assistant",
   "description": "Coding assistant providing chat with your code though LLM.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": "https://github.com/DScudeler/codeassistant",
   "engines": {
     "vscode": "^1.83.0"
@@ -32,6 +32,11 @@
       {
         "command": "codeAssistant.openChat",
         "title": "Open chat",
+        "category": "Code Assistant"
+      },
+      {
+        "command": "codeAssistant.infill",
+        "title": "Infill code",
         "category": "Code Assistant"
       }
     ],
