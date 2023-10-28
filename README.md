@@ -3,8 +3,7 @@ A small personnal project to play with AI and VS Code.
 
 Code assistant provides a bridge between coding LLM and your development environment.
 
-> **DISCLAIMER** : This project is just a try. It does not meet any QA expectations
-> and is not related to my employer in any way.  
+> **DISCLAIMER** : This project is just a try. It does not meet any QA expectations.    
 > I highly recommend that you use other LLM frameworks or extensions for production.
 
 ## Features
