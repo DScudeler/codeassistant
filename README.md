@@ -1,5 +1,5 @@
 # Code Assistant
-A small personnal project to play with AI and VS Code.
+A small personal project to play with AI and VS Code.
 
 Code assistant provides a bridge between coding LLM and your development environment.
 
