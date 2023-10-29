@@ -20,13 +20,17 @@ This extension contributes the following settings:
 * `codeAssistant.prompt.user`: User prompt used to open chat.
 * `codeAssistant.prompt.assistant`: Simulated answer from assistant to open chat.
 
+## Extension commands
+* `codeAssistant.clearChat`: clear current chat.
+* `codeAssistant.openChat`: sends prompt for current chat.
+* `codeAssistant.infill`: use `<FILL>` separator in selection for code completion.
+
 ## Known Issues
 - general robustness regarding server connection
 - string format issues when retreiving some code with \{
+- chat does not display sometimes
 
 ## Release Notes
-### 0.0.1
-
-Initial release
+> See changelog
 
 ---
