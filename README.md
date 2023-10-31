@@ -25,9 +25,6 @@ This extension contributes the following settings:
 * `codeAssistant.openChat`: sends prompt for current chat.
 * `codeAssistant.infill`: use `<FILL>` separator in selection for code completion.
 
-## demo
-https://github.com/DScudeler/codeassistant/assets/64302229/10b89c12-e342-4025-b1a3-bb7980352692
-
 
 ## Known Issues
 - general robustness regarding server connection
