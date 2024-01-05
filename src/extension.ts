@@ -8,13 +8,14 @@ import { ChatViewProvider } from './panels/ChatView';
 export function activate(context: vscode.ExtensionContext) {
     const configuration = vscode.workspace.getConfiguration();
 	const target = configuration.get<string>('codeAssistant.server.address');
+	const key = configuration.get<string>('codeAssistant.server.key');
 
     // no server configuration, no extension.
     if (!target) {
         return;
     }
 
-	const provider = new ChatViewProvider(context.extensionUri, target);
+	const provider = new ChatViewProvider(context.extensionUri, target, key);
 
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(ChatViewProvider.viewType, provider));
@@ -25,9 +26,6 @@ export function activate(context: vscode.ExtensionContext) {
         }),
         vscode.commands.registerCommand("codeAssistant.openChat", () => {
             provider.openChat();
-        }),
-        vscode.commands.registerCommand("codeAssistant.infill", () => {
-            provider.infill();
         }),
     );
 }

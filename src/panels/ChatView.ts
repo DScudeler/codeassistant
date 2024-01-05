@@ -1,41 +1,26 @@
 import * as vscode from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { StringFormatter} from "../utilities/StringFormatter";
+import { StringFormatter } from "../utilities/StringFormatter";
+import { Assistant } from "../assistant/Assistant";
+import { Conversation } from "../assistant/Conversation";
 
-var grpc = require('@grpc/grpc-js');
-var protoLoader = require('@grpc/proto-loader');
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
 
 	public static readonly viewType = 'codeAssistant.chatView';
 
 	private _view?: vscode.WebviewView;
-	private _conversation: any;
-	private _lastResponse: string;
-	private _client;
+	private _conversation = new Conversation();
+	private _lastResponse = "";
+	private _assistant : Assistant;
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
-		target: string
+		target: string,
+		key: string
 	) {
-		this._conversation = [];
-		this._lastResponse = "";
-
-		const PROTO_PATH = vscode.Uri.joinPath(_extensionUri, "out", "instruct.proto").fsPath;
-
-		const packageDefinition = protoLoader.loadSync(
-			PROTO_PATH,
-			{
-				keepCase: true,
-				longs: String,
-				enums: String,
-				defaults: true,
-				oneofs: true
-			});
-
-		const instProto = grpc.loadPackageDefinition(packageDefinition).instruct;
-		this._client = new instProto.Instruction(target, grpc.credentials.createInsecure());
+		this._assistant = new Assistant(target, key);
 	}
 
 	public resolveWebviewView(
@@ -63,7 +48,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 					{
 						this._sendToChat(data.value);
 						break;
-					}				
+					}
 			}
 		});
 	}
@@ -71,7 +56,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
 	public clearChat() {
 		// reset conversation
-		this._conversation = [];
+		this._conversation.clear();
 
 		// and send refresh order
 		this._view?.webview.postMessage({ type: 'chatHistory', history: this._conversation });
@@ -89,121 +74,84 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 		});
 	}
 
-	public infill() {
-		// gets the selection, splits around <FILL>, sends out request and updates selection range
-		const activeTextEditor = vscode.window.activeTextEditor;
-		if (!activeTextEditor) {
-			return;
-		}
-		let selected = activeTextEditor.selection;
-		if (selected.isEmpty) {
-			return;
-		}
-
-		const selectedText = activeTextEditor.document.getText(selected);
-		const splitText = selectedText?.split("<FILL>");
-
-		let call = this._client.fill({ prefix: splitText[0], suffix: splitText[0]});
-		let dataCallBack = (response: any) => {
-			this._lastResponse = response.whole_text;
-			activeTextEditor.edit(editBuilder => {
-				// update current selection
-				selected = activeTextEditor.selection;
-
-				editBuilder.replace(selected, this._lastResponse);
-			});
-		};
-
-		let validateCallBack = () => {
-			activeTextEditor.edit(editBuilder => {
-				// update current selection
-				selected = activeTextEditor.selection;
-
-				editBuilder.replace(selected, this._lastResponse);
-
-				this._lastResponse = "";
-			});
-
-			call.end();
-		};
-
-		call.on('data', dataCallBack);
-		call.on('end', validateCallBack);
-	}
-
-	private _sendToChat(prompt: string) {
+	private async _sendToChat(prompt: string) {
 		// retrieve selection
 		const selected = vscode.window.activeTextEditor?.selection;
 		const fullCode = vscode.window.activeTextEditor?.document;
 
 		const configuration = vscode.workspace.getConfiguration();
+		const useSystem = configuration.get<boolean>('codeAssistant.prompt.useSystem');
 		const systemPrompt = configuration.get<string>('codeAssistant.prompt.system');
 		const userPrompt = configuration.get<string>('codeAssistant.prompt.user');
-		const assistantPrompt = configuration.get<string>('codeAssistant.prompt.user');
+		const assistantPrompt = configuration.get<string>('codeAssistant.prompt.assistant');
 		const selectionTemplate = configuration.get<string>('codeAssistant.prompt.selection');
 
 		if (selected && !selected.isEmpty) {
 			prompt += selectionTemplate;
 		}
 
-		this._conversation.push({
+		this._conversation.add({
 			role: "user",
 			content: prompt,
 			keys: {
 				selection: fullCode?.getText(selected)
 			}
-		});
-		
-		const firstPromps = [{
-			role: 'system',
-			content: systemPrompt,
-		},
-		{
-			role: 'user',
-			content: userPrompt,
-			keys: {
-				sourceCode: fullCode?.getText()
-			}
-		},
-			{
+		}
+		);
+
+		let conversationToSend = new Conversation();
+
+		if (systemPrompt) {
+			conversationToSend.add({
+				role: useSystem ? 'system' : 'user',
+				content: systemPrompt,
+				keys: {}
+			});
+		}
+
+		if (!useSystem && assistantPrompt) {
+			conversationToSend.add({
 				role: 'assistant',
 				content: assistantPrompt,
-				keys:{}
-			}
-		];
+				keys: {}
+			});
+		}
 
-		const conversationToSend = firstPromps.concat(this._conversation);
+		if (userPrompt && assistantPrompt) {
+			conversationToSend.add({
+				role: 'user',
+				content: userPrompt,
+				keys: {
+					sourceCode: fullCode?.getText()
+				}
+			});
 
-		let call = this._client.generate({ instruction: conversationToSend });
-		let dataCallBack = (response: any) => {
-			this._lastResponse = response.generation.content;
-			this._view?.webview.postMessage({ type: 'chatUpdate', content: this._lastResponse });
+			conversationToSend.add({
+				role: 'assistant',
+				content: assistantPrompt,
+				keys: {}
+			});
+		}
 
-		};
+		conversationToSend.append(this._conversation);
 
-		let registerResponseCallBack = () => {
-			this._conversation.pop();
-			this._conversation.push({ role: 'assistant', content: this._lastResponse });
-			call.end();
+		const answer = await this._assistant.request(conversationToSend);
 
-			this._lastResponse = "";
-		};
-
-		call.on('data', dataCallBack);
-		call.on('end', registerResponseCallBack);
-		
 		// preparing the history
-		this._conversation.push({ role: 'assistant', content: "" });
-		
-		// converting selections in the display
-		const developpedConversiontion = this._conversation.map((row: any) => {
-			let developpedContent = row.content;
-			if (row.keys && row.keys.selection) {
-				developpedContent = new StringFormatter(row.content, {selection: `\`\`\`${row.keys.selection}\`\`\``}).format();
+		this._conversation.add({ role: 'assistant', content: "", keys: {} });
+
+		for await (const chunk of answer) {
+			if (chunk.choices[0].delta.content) {
+				this._lastResponse += chunk.choices[0].delta.content;
 			}
-			return {role: row.role, content: developpedContent};
-		});
-		this._view?.webview.postMessage({ type: 'chatHistory', history: developpedConversiontion });
+			this._view?.webview.postMessage({ type: 'chatUpdate', content: this._lastResponse });
+		}
+
+		this._conversation.takeLast();
+		this._conversation.add({ role: 'assistant', content: this._lastResponse, keys: {} });
+		this._lastResponse = "";
+
+		this._view?.webview.postMessage({ type: 'chatHistory', history: this._conversation.unfold() });		
 	}
 
 
