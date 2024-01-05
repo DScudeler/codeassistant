@@ -33,57 +33,63 @@
         "command": "codeAssistant.openChat",
         "title": "Open chat",
         "category": "Code Assistant"
-      },
-      {
-        "command": "codeAssistant.infill",
-        "title": "Infill code",
-        "category": "Code Assistant"
       }
     ],
     "menus": {
-			"view/title": [
-				{
-					"command": "codeAssistant.clearChat",
-					"group": "navigation",
-					"when": "view == codeAssistant.chatView"
-				}
-			]
-		},
-    "configuration": {
-        "id": "codeAssistant",
-        "title": "Code Assistant",
-        "properties": {
-          "codeAssistant.server.address": {
-            "default": "localhost:50051",
-            "description": "LLM gRPC server address, <host>:<port>",
-            "type": "string",
-            "scope": "resource"
-          },
-          "codeAssistant.prompt.selection": {
-            "default": "\nPlease answer knowing that the code selected is:\n{selection}",
-            "description": "Selection template for user prompt",
-            "type": "string",
-            "scope": "resource"
-          },
-          "codeAssistant.prompt.system": {
-            "default": "As an expert in software engineering, your task is to provide concise and relevant answers.",
-            "description": "System for first prompt",
-            "type": "string",
-            "scope": "resource"
-          },
-          "codeAssistant.prompt.user": {
-            "default": "The next answers are considered using the following code, delimited by <<<CTX>>> tag. The user can ask any question regarding that code, and you shall answer any question about it:\n <<<CTX>>>{sourceCode}<<<CTX>>>",
-            "description": "User prompt to introduce source code, pasted server side with {sourceCode}.",
-            "type": "string",
-            "scope": "resource"
-          },
-          "codeAssistant.prompt.assistant": {
-            "default": "Very well, I shall answer every question in the most accurate and concise way",
-            "description": "Simulated prompt answer for first user prompt. Plays as introduction to the chat with LLM.",
-            "type": "string",
-            "scope": "resource"
-          }
+      "view/title": [
+        {
+          "command": "codeAssistant.clearChat",
+          "group": "navigation",
+          "when": "view == codeAssistant.chatView"
         }
+      ]
+    },
+    "configuration": {
+      "id": "codeAssistant",
+      "title": "Code Assistant",
+      "properties": {
+        "codeAssistant.server.address": {
+          "default": "http://localhost:8000/v1",
+          "description": "LLM API address",
+          "type": "string",
+          "scope": "resource"
+        },
+        "codeAssistant.server.key": {
+          "default": "EMPTY",
+          "description": "LLM API key",
+          "type": "string",
+          "scope": "resource"
+        },
+        "codeAssistant.prompt.selection": {
+          "default": "\nPlease answer knowing that the code selected is:\n{selection}",
+          "description": "Selection template for user prompt",
+          "type": "string",
+          "scope": "resource"
+        },
+        "codeAssistant.prompt.useSystem": {
+          "description": "Use system role to use",
+          "type": "boolean",
+          "scope": "resource"
+        },
+        "codeAssistant.prompt.system": {
+          "default": "As an expert in software engineering, your task is to provide concise and relevant answers.",
+          "description": "System for first prompt",
+          "type": "string",
+          "scope": "resource"
+        },
+        "codeAssistant.prompt.user": {
+          "default": "The next answers are considered using the following code, delimited by <<<CTX>>> tag. The user can ask any question regarding that code, and you shall answer any question about it:\n <<<CTX>>>{sourceCode}<<<CTX>>>",
+          "description": "User prompt to introduce source code, pasted server side with {sourceCode}.",
+          "type": "string",
+          "scope": "resource"
+        },
+        "codeAssistant.prompt.assistant": {
+          "default": "Very well, I shall answer every question in the most accurate and concise way",
+          "description": "Simulated prompt answer for first user prompt. Plays as introduction to the chat with LLM.",
+          "type": "string",
+          "scope": "resource"
+        }
+      }
     }
   },
   "scripts": {
@@ -113,6 +119,7 @@
     "@grpc/grpc-js": "^1.9.5",
     "@grpc/proto-loader": "^0.7.10",
     "@vscode/webview-ui-toolkit": "^1.2.2",
-    "markdown-it": "^13.0.2"
+    "markdown-it": "^13.0.2",
+    "openai": "^4.22.1"
   }
 }

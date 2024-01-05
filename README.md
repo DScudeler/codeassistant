@@ -10,7 +10,7 @@ Code assistant provides a bridge between coding LLM and your development environ
 Chat with your source code through LLM.
 
 ## Requirements
-A gRPC server following the instruction protocol has to be up.
+LLM server implementing OpenAI stream API.
 
 ## Extension Settings
 This extension contributes the following settings:
@@ -23,7 +23,6 @@ This extension contributes the following settings:
 ## Extension commands
 * `codeAssistant.clearChat`: clear current chat.
 * `codeAssistant.openChat`: sends prompt for current chat.
-* `codeAssistant.infill`: use `<FILL>` separator in selection for code completion.
 
 ## Known Issues
 - general robustness regarding server connection

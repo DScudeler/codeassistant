@@ -4,7 +4,7 @@
 * A class for formatting strings with placeholders.
 *
 * @author DScudeler
-* @version 0.0.1
+* @version 0.0.2
 */
 export class StringFormatter {
   /**
@@ -22,14 +22,9 @@ export class StringFormatter {
 * @param format The format string.
 * @param args The arguments for the format string.
 */
-  constructor(format: string, ...args: any[]) {
+  constructor(format: string, args: any) {
     this._format = format;
-    this._args = {};
-    for (let i = 0; i < args.length; i++) {
-      const keys = Object.keys(args[i]);
-      const values = Object.values(args[i]);
-      this._args[keys[0]] = values[0];
-    }
+    this._args = args;
   }
 
 /**
