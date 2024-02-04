@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { StringFormatter } from "../utilities/StringFormatter";
 import { Assistant } from "../assistant/Assistant";
 import { Conversation } from "../assistant/Conversation";
 
@@ -112,7 +111,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 		if (!useSystem && assistantPrompt) {
 			conversationToSend.add({
 				role: 'assistant',
-				content: assistantPrompt,
+				content: "",
 				keys: {}
 			});
 		}
@@ -128,7 +127,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
 			conversationToSend.add({
 				role: 'assistant',
-				content: assistantPrompt,
+				content: "",
 				keys: {}
 			});
 		}

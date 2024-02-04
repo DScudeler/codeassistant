@@ -1,4 +1,3 @@
-import { Assistants } from "openai/resources/beta/assistants/assistants";
 import { Conversation } from "./Conversation";
 import OpenAI from "openai";
 

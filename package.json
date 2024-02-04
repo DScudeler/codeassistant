@@ -78,7 +78,7 @@
           "scope": "resource"
         },
         "codeAssistant.prompt.user": {
-          "default": "The next answers are considered using the following code, delimited by <<<CTX>>> tag. The user can ask any question regarding that code, and you shall answer any question about it:\n <<<CTX>>>{sourceCode}<<<CTX>>>",
+          "default": "The next answers are considered using the following code, delimited by <<<CTX>>> tag. The user can ask any question regarding that code, and you shall answer any question about it:\n <<<CTX>>>{sourceCode}<<</CTX>>>",
           "description": "User prompt to introduce source code, pasted server side with {sourceCode}.",
           "type": "string",
           "scope": "resource"

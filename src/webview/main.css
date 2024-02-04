@@ -21,5 +21,10 @@ div.assistant-text {
 	position: relative;
 	left: 10%;
 	width: 90%;
-	background-color: rgb(65, 65, 65);;
+	background-color: rgb(65, 65, 65);
+}
+
+code {
+	color: rgb(180, 117, 0);
+	background-color: rgb(65, 65, 65);
 }
