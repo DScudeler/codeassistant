@@ -7,12 +7,15 @@ import { Conversation } from "../assistant/Conversation";
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
 
+	
 	public static readonly viewType = 'codeAssistant.chatView';
+
 
 	private _view?: vscode.WebviewView;
 	private _conversation = new Conversation();
 	private _lastResponse = "";
-	private _assistant : Assistant;
+	private _assistant: Assistant;
+
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
@@ -21,6 +24,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 	) {
 		this._assistant = new Assistant(target, key);
 	}
+
 
 	public resolveWebviewView(
 		webviewView: vscode.WebviewView,
@@ -48,6 +52,18 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 						this._sendToChat(data.value);
 						break;
 					}
+				case 'insertText':
+					{
+						const editor = vscode.window.activeTextEditor;
+						if (editor) {
+							// Insérer du texte à la position du curseur actuel
+							editor.edit(editBuilder => {
+								if (editor) {
+									editBuilder.insert(editor.selection.active, data.text);
+								}
+							});
+						}
+					}
 			}
 		});
 	}
@@ -72,6 +88,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 			}
 		});
 	}
+
 
 	private async _sendToChat(prompt: string) {
 		// retrieve selection
@@ -150,7 +167,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 		this._conversation.add({ role: 'assistant', content: this._lastResponse, keys: {} });
 		this._lastResponse = "";
 
-		this._view?.webview.postMessage({ type: 'chatHistory', history: this._conversation.unfold() });		
+		this._view?.webview.postMessage({ type: 'chatHistory', history: this._conversation.unfold() });
 	}
 
 
